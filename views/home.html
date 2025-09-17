@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-br">
+<head><meta charset="utf-8"><title>Home</title></head>
+<body>
+  <h1>Área Logada</h1>
+  <form method="post" action="/logout">
+    <input type="hidden" name="_csrf" id="csrf">
+    <button type="submit">Sair</button>
+  </form>
+  <script>
+    fetch('/csrf-token').then(r=>r.json()).then(d=>{
+      document.getElementById('csrf').value = d.csrfToken;
+    });
+  </script>
+</body>
+</html>

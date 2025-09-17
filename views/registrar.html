@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="pt-br">
+<head><meta charset="utf-8"><title>Registrar</title></head>
+<body>
+  <h1>Registrar</h1>
+  <form method="post" action="/registrar">
+    <input name="email" type="email" placeholder="E-mail" required>
+    <input name="senha" type="password" placeholder="Senha (mín. 8, letra e número)" required>
+    <input type="hidden" name="_csrf" id="csrf">
+    <button type="submit">Criar</button>
+  </form>
+  <p><a href="/login">Já tenho conta</a></p>
+  <script>
+    fetch('/csrf-token').then(r=>r.json()).then(d=>{
+      document.getElementById('csrf').value = d.csrfToken;
+    });
+  </script>
+</body>
+</html>
