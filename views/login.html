@@ -1,18 +1,44 @@
 <!doctype html>
 <html lang="pt-br">
-<head><meta charset="utf-8"><title>Login</title></head>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+</head>
 <body>
   <h1>Login</h1>
-  <form method="post" action="/login">
+
+  <form id="login-form" method="post" action="/login">
     <input name="email" type="email" placeholder="E-mail" required>
     <input name="senha" type="password" placeholder="Senha" required>
     <input type="hidden" name="_csrf" id="csrf">
-    <button type="submit">Entrar</button>
+    <button id="login-submit" type="submit" disabled>Entrar</button>
   </form>
+
   <p><a href="/registrar">Criar conta</a></p>
+
   <script>
-    fetch('/csrf-token').then(r=>r.json()).then(d=>{
-      document.getElementById('csrf').value = d.csrfToken;
+    const form = document.getElementById("login-form");
+    const csrfInput = document.getElementById("csrf");
+    const submitBtn = document.getElementById("login-submit");
+
+    submitBtn.disabled = true;
+
+    fetch("/csrf-token", { credentials: "same-origin", cache: "no-store" })
+      .then(r => r.json())
+      .then(d => {
+        csrfInput.value = d.csrfToken;
+        submitBtn.disabled = false;
+      })
+      .catch(() => {
+        // Ainda assim impedimos enviar sem token:
+        submitBtn.disabled = false;
+      });
+
+    form.addEventListener("submit", (e) => {
+      if (!csrfInput.value) {
+        e.preventDefault();
+        alert("Carregando token de segurança. Tente novamente em 1 segundo.");
+      }
     });
   </script>
 </body>
