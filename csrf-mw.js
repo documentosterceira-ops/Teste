@@ -12,11 +12,15 @@ function csrfTokenRoute(req, res) {
   try {
     ensureSecret(req);
     const token = tokens.create(req.session.csrfSecret);
+    // evita cache em CDN/navegador
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    res.set("Pragma", "no-cache");
     res.json({ csrfToken: token });
   } catch {
     res.status(500).send("Sessão indisponível");
   }
 }
+
 
 function csrfProtect(req, res, next) {
   try {
@@ -32,3 +36,4 @@ function csrfProtect(req, res, next) {
 }
 
 module.exports = { csrfTokenRoute, csrfProtect };
+
