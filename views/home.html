@@ -1,15 +1,39 @@
 <!doctype html>
 <html lang="pt-br">
-<head><meta charset="utf-8"><title>Home</title></head>
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+</head>
 <body>
   <h1>Área Logada</h1>
-  <form method="post" action="/logout">
+
+  <form id="logout-form" method="post" action="/logout">
     <input type="hidden" name="_csrf" id="csrf">
-    <button type="submit">Sair</button>
+    <button id="logout-submit" type="submit" disabled>Sair</button>
   </form>
+
   <script>
-    fetch('/csrf-token').then(r=>r.json()).then(d=>{
-      document.getElementById('csrf').value = d.csrfToken;
+    const form = document.getElementById("logout-form");
+    const csrfInput = document.getElementById("csrf");
+    const submitBtn = document.getElementById("logout-submit");
+
+    submitBtn.disabled = true;
+
+    fetch("/csrf-token", { credentials: "same-origin", cache: "no-store" })
+      .then(r => r.json())
+      .then(d => {
+        csrfInput.value = d.csrfToken;
+        submitBtn.disabled = false;
+      })
+      .catch(() => {
+        submitBtn.disabled = false;
+      });
+
+    form.addEventListener("submit", (e) => {
+      if (!csrfInput.value) {
+        e.preventDefault();
+        alert("Carregando token de segurança. Tente novamente em 1 segundo.");
+      }
     });
   </script>
 </body>
